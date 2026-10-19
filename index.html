@@ -55,7 +55,15 @@ button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-rad
 .act:hover:not(:disabled){color:var(--text);background:rgba(120,160,255,.12)}
 .act:disabled{opacity:.3;cursor:not-allowed}
 .act svg{width:15px;height:15px}
-@media (max-width:860px){.nav-in{height:auto;flex-wrap:wrap;padding-block:10px;gap:10px}.acts{margin-left:0;width:100%;overflow-x:auto}}
+@media (max-width:860px){
+  .nav{position:relative;top:auto}
+  .nav-in{height:auto;flex-wrap:wrap;padding-block:12px;gap:10px}
+  .seg{width:100%}.seg button{flex:1;justify-content:center;padding:8px 10px}
+  .acts{margin-left:0;width:100%;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+  .act{grid-column:span 2;justify-content:center;height:40px;padding:0 6px;font-size:13px;letter-spacing:.03em;background:rgba(3,9,34,.65);border:1px solid var(--line-2);white-space:normal;text-align:center;line-height:1.1}
+  #a-back,#a-reset{grid-column:span 3}
+}
+@media (max-width:420px){.act svg{display:none}.act{font-size:12.5px}}
 
 /* broadcast header */
 .masthead{padding-top:22px;display:flex;flex-direction:column;gap:14px}
