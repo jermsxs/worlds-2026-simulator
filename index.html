@@ -141,6 +141,7 @@ button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-rad
 .pk{margin-top:26px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
 @media (max-width:1100px){.pk{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:899px){
+  body{padding-bottom:110px}
   .pk{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:14px 10px;scroll-margin-top:12px}
   .pk .pk-lab{display:block;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:-6px}
   .pk-lab.a{color:var(--cyan);order:0}.pk-lab.o{color:var(--out);order:1}
@@ -197,7 +198,13 @@ button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-rad
   .pair+.pair{padding-top:34px}
   .pair::before,.pair::after{display:none}
 }
-@media (prefers-reduced-motion: reduce){.tm,.toast{transition:none}}
+.ko-pill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:45;display:inline-flex;align-items:center;gap:10px;
+  background:var(--cyan);color:var(--cyan-ink);font-weight:700;font-size:16px;letter-spacing:.05em;text-transform:uppercase;padding:14px 20px;white-space:nowrap;
+  box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.25) inset}
+.ko-pill svg{width:18px;height:18px;animation:nudge 1.2s ease-in-out infinite}
+.ko-pill[hidden]{display:none}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+@media (prefers-reduced-motion: reduce){.tm,.toast{transition:none}.ko-pill svg{animation:none}}
 </style>
 </head>
 <body>
@@ -220,6 +227,7 @@ button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-rad
 
 <div class="wrap"><main id="view"></main></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<button class="ko-pill" id="ko-pill" type="button" hidden>Knockout Stage unlocked<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button>
 
 <script>
 const REG={GEN:"LCK",HLE:"LCK",T1:"LCK",DK:"LCK",AL:"LPL",BLG:"LPL",TES:"LPL",IG:"LPL",G2:"LEC",MKOI:"LEC",KC:"LEC",TL:"LCS",LYON:"LCS",TSW:"LCP",CFO:"LCP",LOS:"CBLOL"};
@@ -265,7 +273,7 @@ function focusLive(){if(window.innerWidth<900){const g=document.querySelector(".
 function completeRound(){
   const r=cur();hist.push(clone({S,view}));applyRound(r);
   if(r.n<5){S.rounds.push(drawRound(r.n+1));toast(`Round ${r.n+1} drawn`)}
-  else{S.swissDone=true;toast("Knockout Stage unlocked")}
+  else{S.swissDone=true;if(window.innerWidth>=900)toast("Knockout Stage unlocked")}
 }
 function drawKO(){
   const q30=shuffle(finished("3-0")),q31=finished("3-1"),q32=shuffle(finished("3-2"));
@@ -415,6 +423,7 @@ function render(){
     const rd=document.getElementById("redraw-ko");if(rd)rd.addEventListener("click",()=>{drawKO();render();save();toast("Quarterfinals redrawn")});
   }
   layout();
+  document.getElementById("ko-pill").hidden=!(S.swissDone&&view.stage==="swiss"&&window.innerWidth<900);
   const ko=view.stage==="ko";
   document.getElementById("a-fav").disabled=!ko&&S.swissDone;
   document.getElementById("a-sim").disabled=!ko&&S.swissDone;
@@ -424,12 +433,13 @@ function render(){
 }
 document.getElementById("tab-swiss").onclick=()=>{view.stage="swiss";render();save()};
 document.getElementById("tab-ko").onclick=enterKO;
+document.getElementById("ko-pill").onclick=enterKO;
 document.getElementById("a-fav").onclick=()=>view.stage==="ko"?fillKO("fav"):fillSwiss("fav");
 document.getElementById("a-sim").onclick=()=>view.stage==="ko"?fillKO("rand"):fillSwiss("rand");
 document.getElementById("a-all").onclick=simAll;
 document.getElementById("a-back").onclick=back;
 document.getElementById("a-reset").onclick=reset;
-window.addEventListener("resize",layout);
+window.addEventListener("resize",()=>{layout();document.getElementById("ko-pill").hidden=!(S.swissDone&&view.stage==="swiss"&&window.innerWidth<900)});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layout).catch(()=>{});
 if(!load())S=fresh();
 render();
