@@ -223,8 +223,10 @@ function icon(x,s=28){
 let S,hist=[],view={stage:"swiss"};
 function fresh(){return{rounds:[{n:1,matches:R1.map(([a,b])=>({a,b,bo:1,w:null}))}],rec:Object.fromEntries(TEAMS.map(x=>[x,[0,0]])),played:Object.fromEntries(TEAMS.map(x=>[x,[]])),swissDone:false,ko:null}}
 const clone=o=>JSON.parse(JSON.stringify(o));
-function save(){try{localStorage.setItem(KEY,JSON.stringify({S,hist,view}))}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||"null");if(d&&d.S){S=d.S;hist=d.hist||[];view=d.view||view;return true}}catch(e){}return false}
+// picks last only for this tab (survive a refresh, not a new visit)
+try{["worlds26-simulator-v1","worlds26-simulator-v2","worlds26-simulator-v3","worlds26-simulator-v4","worlds26-simulator-v5","worlds26-icons-v1"].forEach(k=>localStorage.removeItem(k))}catch(e){}
+function save(){try{sessionStorage.setItem(KEY,JSON.stringify({S,hist,view}))}catch(e){}}
+function load(){try{const d=JSON.parse(sessionStorage.getItem(KEY)||"null");if(d&&d.S){S=d.S;hist=d.hist||[];view=d.view||view;return true}}catch(e){}return false}
 const cur=()=>S.rounds[S.rounds.length-1];
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const keySort=(a,b)=>(+b[0]-+a[0])||(+a[2]-+b[2]);
